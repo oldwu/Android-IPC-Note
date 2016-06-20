@@ -55,7 +55,8 @@ AIDL所生成Java文件：
 * 继承自IInterface接口
 * 当中声明了所包含的方法的id
 * 声明了一个内部类的Stub
-* Stub内部有一个代理类Proxy，提供了一个逻辑，当客户端和服务端在同一个进程时，不走Stub中的transact，否则则走transact
+* Stub内部有一个代理类Proxy，提供了一个逻辑，当客户端和服务端在同一个进程时，不走Stub中的transact，否则则走transact  
+
 详细的方法含义：
 * asInterface   用于将服务端的Binder对象转换成客户端所需的AIDL接口类型的对象。 若客户端和服务端位于同一个进程，则方法返回的是服务端的Stub对象本身，否则返回的是系统封装后的Stub.proxy对象
 * asBinder      用于返回当前Binder对象
