@@ -54,10 +54,30 @@ AIDL接口中只支持方法，不支持声明静态常量
 AIDL所生成Java文件：
 * 继承自IInterface接口
 * 当中声明了所包含的方法的id
-* 声明了一个内部类的Stub
+* 声明了一个内部类的Stub，该类相当于一个Binder，new Stub()可以创建一个Binder
 * Stub内部有一个代理类Proxy，提供了一个逻辑，当客户端和服务端在同一个进程时，不走Stub中的transact，否则则走transact  
 
 详细的方法含义：
 * asInterface   用于将服务端的Binder对象转换成客户端所需的AIDL接口类型的对象。 若客户端和服务端位于同一个进程，则方法返回的是服务端的Stub对象本身，否则返回的是系统封装后的Stub.proxy对象
 * asBinder      用于返回当前Binder对象
-* onTransact    
+* onTransact    此方法运行于Binder线程池中，客户端发起跨进程请求时，远程请求会通过系统底层封装之后交由此方法来处理  
+
+
+RemoteCallBackList是系统专门用于删除挂进程listern的接口，是一个泛型，但无法像操作List一样去操作它，必须要使用beginBroadcast和finishBroadcast的配对方式，样例代码如下：
+
+```java
+
+private RemoteCallbackList<IOnNewBookArrived> mListenerList = new RemoteCallbackList<IOnNewBookArrivedListener>();
+//注册listener
+mListenerList.register(listener);
+
+//注销listener
+mListenerList.unregister(listener);
+
+//获取RemoteCallbackList中的元素个数
+final int N = mListenerList.beginBroadcast();
+for (int i = 0; i < N; i++){
+    IOnNewBookArrivedListener l = mListenerList.getBroadcastItem(i);
+}
+mListenerList.finishBroadcast();
+```
